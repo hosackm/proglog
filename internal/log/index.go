@@ -8,8 +8,8 @@ import (
 )
 
 var (
-	offsetWidth   uint64 = 4
-	positionWidth uint64 = 8
+	offsetWidth   uint64 = 4 // 4 bytes for offset
+	positionWidth uint64 = 8 // 8 bytes for position
 	entryWidth           = offsetWidth + positionWidth
 )
 
@@ -19,6 +19,11 @@ type index struct {
 	size uint64
 }
 
+// Returns a new index initialized with the data in the provided file.
+// If the file is larger than the max allowed size in bytes from the
+// provided config, it is truncated.
+//
+// The file is then mmap-ed for quicker access.
 func newIndex(f *os.File, c Config) (*index, error) {
 	idx := &index{
 		file: f,
@@ -46,6 +51,8 @@ func newIndex(f *os.File, c Config) (*index, error) {
 	return idx, nil
 }
 
+// Close the index after syncing to mmap and disk and truncating if
+// the current size is larger than the config max size.
 func (i *index) Close() error {
 	if err := i.mmap.Sync(gommap.MS_SYNC); err != nil {
 		return err
@@ -62,6 +69,7 @@ func (i *index) Close() error {
 	return i.file.Close()
 }
 
+// Read the offset and position of the provided index-point within the index.
 func (i *index) Read(in int64) (out uint32, pos uint64, err error) {
 	if i.size == 0 {
 		return 0, 0, io.EOF
@@ -89,6 +97,8 @@ func (i *index) Read(in int64) (out uint32, pos uint64, err error) {
 	return out, pos, nil
 }
 
+// Write the offset and position to the end of index.
+// If there is no room in the index EOF is returned.
 func (i *index) Write(off uint32, pos uint64) error {
 	if uint64(len(i.mmap)) < i.size+entryWidth {
 		return io.EOF
@@ -100,6 +110,7 @@ func (i *index) Write(off uint32, pos uint64) error {
 	return nil
 }
 
+// Returns the name of the file used by this index.
 func (i *index) Name() string {
 	return i.file.Name()
 }

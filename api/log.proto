@@ -2,9 +2,10 @@ syntax = "proto3";
 
 package log.v1;
 
-option go_package = "github.com/hosack/proglog/api/v1";
+option go_package = "github.com/hosackm/proglog/api";
 
 message Record {
     bytes value = 1;
     uint64 offset = 2;
 }
+
