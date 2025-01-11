@@ -3,8 +3,8 @@ EXE=$(BIN)/server
 
 all: $(EXE)
 
-$(EXE):
-	go build -o $(EXE) ./cmd/server/main.go
+$(EXE): cmd/server/main.go
+	go build -o $@ $^
 
 compile:
 	protoc api/*.proto \
