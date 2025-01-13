@@ -1,0 +1,17 @@
+{
+    "CN": "Matt's Awesome CA",
+    "key": {
+        "algo": "rsa",
+        "size": 2048
+    },
+    "names": [
+        {
+            "C": "DE",
+            "L": "BER",
+            "ST": "Berlin",
+            "O": "Matt's Awesome Company",
+            "OU": "CA Services"
+        }
+    ]
+}
+
